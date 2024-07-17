@@ -2,33 +2,46 @@ import React, { useState } from "react";
 import {
   Box,
   Container,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Text,
   Button,
   FormControl,
   FormLabel,
   Input,
   InputGroup,
-  InputRightElement,
-  VStack,
 } from "@chakra-ui/react";
 import { Radio, RadioGroup, Stack } from "@chakra-ui/react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const DetailsPage = () => {
-  const [show, setShow] = useState("");
+  const [gender, setGender] = useState("");
   const [age, setAge] = useState("");
   const [mobile, setMobile] = useState("");
-  const handleClick = () => setShow(!show);
+  const [dob, setDob] = useState("");
 
-  const submitHandler = () => {};
+  const handleSubmit = () => {
+    const userDetails = {
+      gender,
+      age,
+      mobile,
+      dob,
+    };
+    axios.post(`http://localhost:2000/profile/add`, userDetails).then((res) => {
+      res.data.message === "Information Added Successfully" &&
+        toast.success(res.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
+    });
+  };
+
   return (
     <Container maxW="xl" centerContent>
-      <Box fontSize={"50px"}>
+      <Box fontSize={"50px"} d="flex">
         <Text>Profile Page</Text>
+        <Button colorScheme="teal" size="md" textAlign={"center"}>
+          Log-Out
+        </Button>
       </Box>
 
       <Box
@@ -47,17 +60,17 @@ const DetailsPage = () => {
         <FormControl id="age" isRequired>
           <FormLabel>Age</FormLabel>
           <Input
-            placeholder="Enter Your Email"
+            placeholder="Enter Your Age"
             onChange={(e) => setAge(e.target.value)}
           />
         </FormControl>
 
         <FormControl id="gender" isRequired>
           <FormLabel>Gender</FormLabel>
-          <RadioGroup onChange={setShow} value={show}>
-            <Stack direction="row">
-              <Radio value="1">Male</Radio>
-              <Radio value="2">Female</Radio>
+          <RadioGroup onChange={(e) => setGender(e.target.value)}>
+            <Stack direction="column">
+              <Radio value="male">Male</Radio>
+              <Radio value="female">Female</Radio>
             </Stack>
           </RadioGroup>
         </FormControl>
@@ -68,13 +81,18 @@ const DetailsPage = () => {
             placeholder="Select Date and Time"
             size="md"
             type="datetime-local"
+            onChange={(e) => setDob(e.target.value)}
           />
         </FormControl>
 
         <FormControl id="mobile" isRequired>
           <FormLabel>Mobile </FormLabel>
           <InputGroup>
-            <Input type="tel" placeholder="Phone number" />
+            <Input
+              type="tel"
+              placeholder="Phone number"
+              onChange={(e) => setMobile(e.target.value)}
+            />
           </InputGroup>
         </FormControl>
 
@@ -82,7 +100,7 @@ const DetailsPage = () => {
           colorScheme="blue"
           width={"100%"}
           style={{ marginTop: 15 }}
-          onClick={submitHandler}
+          onClick={handleSubmit}
         >
           Complete
         </Button>

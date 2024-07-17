@@ -5,16 +5,34 @@ import {
   FormLabel,
   Input,
   InputGroup,
-  InputRightElement,
   VStack,
 } from "@chakra-ui/react";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
-  const [show, setShow] = useState(false);
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleClick = () => {};
+  const handleClick = () => {
+    const userDetails = {
+      email,
+      password,
+    };
+    axios.post(`http://localhost:2000/users/login`, userDetails).then((res) => {
+      res.data.message === "Login Success"
+        ? toast.success(res.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          }) && navigate("/home")
+        : toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
+    });
+  };
 
   return (
     <VStack spacing={"5px"}>
@@ -30,7 +48,6 @@ const Login = () => {
         <FormLabel>Password</FormLabel>
         <InputGroup>
           <Input
-            type={show ? "text" : "password"}
             placeholder="Enter Your Password"
             onChange={(e) => setPassword(e.target.value)}
           />

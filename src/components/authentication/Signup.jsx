@@ -4,23 +4,40 @@ import {
   FormLabel,
   Input,
   InputGroup,
-  InputRightElement,
   VStack,
 } from "@chakra-ui/react";
+import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Signup = () => {
-  const [show, setShow] = useState(false);
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [confirmpassword, setConfirmpassword] = useState("");
   const [password, setPassword] = useState("");
-  const [pic, setPic] = useState();
-  const handleClick = () => setShow(!show);
+  const handleClick = async () => {
+    const userDetails = {
+      name,
+      email,
+      password,
+    };
+    await axios
+      .post(`http://localhost:2000/users/register`, userDetails)
+      .then((res) => {
+        res.data.message === "User Added Successfully"
+          ? toast.success(res.data.message, {
+              position: "top-center",
+              autoClose: 1000,
+            }) && navigate("/home")
+          : toast.error(res.data.message, {
+              position: "top-center",
+              autoClose: 1000,
+            });
+      });
+  };
 
-  const postDetails = (pics) => {};
-
-  const submitHandler = () => {};
   return (
     <VStack spacing={"5px"}>
       <FormControl id="first-name" isRequired>
@@ -43,7 +60,6 @@ const Signup = () => {
         <FormLabel>Password</FormLabel>
         <InputGroup>
           <Input
-            type={show ? "text" : "password"}
             placeholder="Enter Your Password"
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -54,7 +70,6 @@ const Signup = () => {
         <FormLabel>Confirm Password</FormLabel>
         <InputGroup>
           <Input
-            type={show ? "text" : "password"}
             placeholder="Enter Your Confirm Password"
             onChange={(e) => setConfirmpassword(e.target.value)}
           />
@@ -65,7 +80,7 @@ const Signup = () => {
         colorScheme="blue"
         width={"100%"}
         style={{ marginTop: 15 }}
-        onClick={submitHandler}
+        onClick={handleClick}
       >
         Sign Up
       </Button>
